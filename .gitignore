@@ -1,0 +1,57 @@
+# Ignore build output directories
+bin/
+obj/
+
+# Ignore user-specific files
+*.user
+*.vspscc
+*.vssscc
+.vscode/
+.vs/
+
+# Ignore logs and temporary files
+*.log
+logs/
+*.tmp
+*.temp
+*.cache
+*.pdb
+*.mdb
+
+# Ignore package directories and lock files
+packages/
+*.nupkg
+project.lock.json
+project.fragment.lock.json
+*.nuget/
+
+# Ignore configuration and secrets
+appsettings.Development.json
+appsettings.Local.json
+appsettings.Production.json
+appsettings.json
+
+# Ignore environment-specific configuration files with sensitive data
+appsettings.*.json
+
+# Ignore secrets file for local development
+secrets.json
+
+# Ignore Rider files
+.idea/
+
+# Ignore JetBrains Rider IDE files
+.idea/
+
+# Ignore database and migration files
+*.mdf
+*.ldf
+*.sdf
+
+# Ignore publish output
+.publish/
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+desktop.ini
