@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SecureStore1.API.DTOs;
+using SecureStore1.API.Models;
 using SecureStore1.API.Services.Interfaces;
 
 namespace SecureStore1.API.Controllers
@@ -22,28 +23,25 @@ namespace SecureStore1.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterUserDto registerDto)
         {
-            try
+            var serviceResponse = await _userService.RegisterAsync(registerDto);
+
+            if (!serviceResponse.Success)
             {
-                var result = await _userService.RegisterAsync(registerDto);
-                return Ok(new { Message = "User registered successfully!" });
+                return BadRequest(ApiResponse<string>.FailureResponse(serviceResponse.Message));
             }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+
+            return Ok(ApiResponse<string>.SuccessResponse(serviceResponse.Message));
         }
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginUserDto loginDto)
         {
-            try
+            var serviceResponse = await _userService.LoginAsync(loginDto);
+            if (!serviceResponse.Success)
             {
-                var result = await _userService.LoginAsync(loginDto);
-                return Ok(new { Message = "Login successful!" });
+                return BadRequest(ApiResponse<string>.FailureResponse(serviceResponse.Message));
             }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+
+            return Ok(ApiResponse<string>.SuccessResponse(serviceResponse.Message));
         }
     }
 }

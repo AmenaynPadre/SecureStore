@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SecureStore1.API.Data;
-using SecureStore1.API.Models;
 using SecureStore1.API.Repositories.Interfaces;
 using SecureStore1.API.Repositories;
 using SecureStore1.API.Services.Interfaces;
@@ -16,6 +15,8 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using SecureStore1.API.Data.Entities;
+using SecureStore1.API.Filters;
 
 namespace SecureStore1.API
 {
@@ -41,7 +42,10 @@ namespace SecureStore1.API
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers(options =>
+            {
+                options.Filters.Add<ValidationFilter>();
+            });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -64,25 +68,25 @@ namespace SecureStore1.API
             builder.Services.AddFluentValidationAutoValidation();
             builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
-            builder.Services.Configure<ApiBehaviorOptions>(options =>
-            {
-                options.InvalidModelStateResponseFactory = context =>
-                {
-                    var errors = context.ModelState
-                        .Where(x => x.Value.Errors.Any())
-                        .ToDictionary(
-                            kvp => kvp.Key,
-                            kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
-                        );
+            //builder.Services.Configure<ApiBehaviorOptions>(options =>
+            //{
+            //    options.InvalidModelStateResponseFactory = context =>
+            //    {
+            //        var errors = context.ModelState
+            //            .Where(x => x.Value.Errors.Any())
+            //            .ToDictionary(
+            //                kvp => kvp.Key,
+            //                kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+            //            );
 
-                    return new BadRequestObjectResult(new
-                    {
-                        Success = false,
-                        Message = "Validation failed.",
-                        Errors = errors
-                    });
-                };
-            });
+            //        return new BadRequestObjectResult(new
+            //        {
+            //            Success = false,
+            //            Message = "Validation failed.",
+            //            Errors = errors
+            //        });
+            //    };
+            //});
 
             builder.Services.AddAuthentication(options =>
             {

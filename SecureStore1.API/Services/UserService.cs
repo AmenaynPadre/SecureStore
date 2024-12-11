@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using SecureStore1.API.Data.Entities;
 using SecureStore1.API.DTOs;
 using SecureStore1.API.Helpers;
 using SecureStore1.API.Models;
@@ -54,39 +55,46 @@ namespace SecureStore1.API.Services
             return dto;
         }
 
-        public async Task<string> LoginAsync(LoginUserDto loginDto)
+        public async Task<ServiceResponse<string>> LoginAsync(LoginUserDto loginDto)
         {
             var user = await _userRepository.GetUserByUserNameAsync(loginDto.UserName);
-            var verifyPassword = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, loginDto.Password);
-
-            if (user == null || verifyPassword == 0)
+            if (user == null)
             {
-                throw new Exception("something wrong");
+                return ServiceResponse<string>.FailureResponse("Invalid username or password.");
+            }
+
+            var passwordVerificationResult = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, loginDto.Password);
+            if (passwordVerificationResult == PasswordVerificationResult.Failed)
+            {
+                return ServiceResponse<string>.FailureResponse("Invalid username or password.");
             }
 
             var token = await GenerateJwtToken(user);
 
-            return token;
+            return ServiceResponse<string>.SuccessResponse(token, "Login successful.");
         }
-        public async Task<string> RegisterAsync(RegisterUserDto registerUserDto)
+        public async Task<ServiceResponse<string>> RegisterAsync(RegisterUserDto registerUserDto)
         {
-            var isUserExist = await _userRepository.GetUserByUserNameAsync(registerUserDto.UserName);
-            if (isUserExist != null)
+            var existingUser = await _userRepository.GetUserByUserNameAsync(registerUserDto.UserName);
+            if (existingUser != null)
             {
-                throw new Exception("user exist");
+                return ServiceResponse<string>.FailureResponse("User already exists.");
             }
 
             var role = await _roleRepository.FindByNameAsync("User");
+            if (role == null)
+            {
+                return ServiceResponse<string>.FailureResponse("Role not found.");
+            }
 
             var user = _mapper.Map<User>(registerUserDto);
 
-            // Hash the password and assign it to the PasswordHash property of the user
             user.PasswordHash = _passwordHasher.HashPassword(user, registerUserDto.Password);
 
 
             await _userRepository.AddAsync(user);
 
-            return "ok";
+            return ServiceResponse<string>.SuccessResponse("User registered successfully.");
         }
 
         public Task UpdateUserAsync(UserDto userDto)

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 
-namespace SecureStore1.API.Models
+namespace SecureStore1.API.Data.Entities
 {
     public class User
     {

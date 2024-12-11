@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
+using SecureStore1.API.Data.Entities;
 using SecureStore1.API.DTOs;
-using SecureStore1.API.Models;
 
 namespace SecureStore1.API.Helpers
 {

@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SecureStore1.API.Models;
+using SecureStore1.API.Data.Entities;
 
 namespace SecureStore1.API.Data
 {

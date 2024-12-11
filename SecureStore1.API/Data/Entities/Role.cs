@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace SecureStore1.API.Models
+namespace SecureStore1.API.Data.Entities
 {
-    public class Role 
+    public class Role
     {
         public int Id { get; set; }
         public string Name { get; set; }

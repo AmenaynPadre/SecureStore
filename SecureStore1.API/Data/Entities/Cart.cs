@@ -1,4 +1,4 @@
-﻿namespace SecureStore1.API.Models
+﻿namespace SecureStore1.API.Data.Entities
 {
     public class Cart
     {

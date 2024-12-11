@@ -1,5 +1,5 @@
-﻿using SecureStore1.API.DTOs;
-using SecureStore1.API.Models;
+﻿using SecureStore1.API.Data.Entities;
+using SecureStore1.API.DTOs;
 
 namespace SecureStore1.API.Services.Interfaces
 {
