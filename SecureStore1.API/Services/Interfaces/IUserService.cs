@@ -8,9 +8,9 @@ namespace SecureStore1.API.Services.Interfaces
     {
         Task<ServiceResponse<string>> RegisterAsync(RegisterUserDto userDto);
         Task<ServiceResponse<string>> LoginAsync(LoginUserDto loginDto);
-        Task<UserDto> GetUserByIdAsync(int userId);
-        Task<IEnumerable<User>> GetAllUsersAsync();
-        Task UpdateUserAsync(UserDto userDto);
-        Task DeleteUserAsync(int userId);
+        Task<ServiceResponse<UserDto>> GetUserByIdAsync(int userId);
+        Task<ServiceResponse<IEnumerable<UserDto>>> GetAllUsersAsync();
+        Task<ServiceResponse<string>> UpdateUserAsync(UserDto userDto);
+        Task<ServiceResponse<string>> DeleteUserAsync(int userId);
     }
 }

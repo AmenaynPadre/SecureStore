@@ -1,4 +1,6 @@
-﻿using SecureStore1.API.Data.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using SecureStore1.API.Data;
+using SecureStore1.API.Data.Entities;
 using SecureStore1.API.Enums;
 using SecureStore1.API.Repositories.Interfaces;
 
@@ -6,9 +8,18 @@ namespace SecureStore1.API.Repositories
 {
     public class OrderRepository : IOrderRepository
     {
-        public Task<Order> CreateOrderAsync(Order order)
+        private readonly MyDbContext _context;
+
+        public OrderRepository(MyDbContext dbContext)
         {
-            throw new NotImplementedException();
+            _context = dbContext;
+        }
+
+        public async Task<Order> CreateOrderAsync(Order order)
+        {
+            _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
+            return order;
         }
 
         public Task DeleteOrderAsync(int orderId)
@@ -21,14 +32,21 @@ namespace SecureStore1.API.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<Order> GetOrderByIdAsync(int orderId)
+        public async Task<Order> GetOrderByIdAsync(int orderId)
         {
-            throw new NotImplementedException();
+            return await _context.Orders
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                .FirstOrDefaultAsync(o => o.Id == orderId);
         }
 
-        public Task<IEnumerable<Order>> GetOrdersByUserIdAsync(int userId)
+        public async Task<IEnumerable<Order>> GetOrdersByUserIdAsync(int userId)
         {
-            throw new NotImplementedException();
+            return await _context.Orders
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                .Where(o => o.UserId == userId)
+                .ToListAsync();
         }
 
         public Task UpdateOrderStatusAsync(int orderId, OrderStatus status)

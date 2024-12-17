@@ -37,7 +37,52 @@ namespace SecureStore1.API.Migrations
                     b.ToTable("RoleUser");
                 });
 
-            modelBuilder.Entity("SecureStore1.API.Models.Order", b =>
+            modelBuilder.Entity("SecureStore1.API.Data.Entities.Cart", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Carts");
+                });
+
+            modelBuilder.Entity("SecureStore1.API.Data.Entities.CartItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CartId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CartId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("CartItems");
+                });
+
+            modelBuilder.Entity("SecureStore1.API.Data.Entities.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -47,9 +92,6 @@ namespace SecureStore1.API.Migrations
 
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
 
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("numeric");
@@ -61,10 +103,10 @@ namespace SecureStore1.API.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Order");
+                    b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("SecureStore1.API.Models.OrderItem", b =>
+            modelBuilder.Entity("SecureStore1.API.Data.Entities.OrderItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -75,23 +117,25 @@ namespace SecureStore1.API.Migrations
                     b.Property<int>("OrderId")
                         .HasColumnType("integer");
 
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
                     b.Property<int>("ProductId")
                         .HasColumnType("integer");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
-                    b.Property<decimal>("UnitPrice")
-                        .HasColumnType("numeric");
-
                     b.HasKey("Id");
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderItem");
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("OrderItems");
                 });
 
-            modelBuilder.Entity("SecureStore1.API.Models.Product", b =>
+            modelBuilder.Entity("SecureStore1.API.Data.Entities.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -118,7 +162,7 @@ namespace SecureStore1.API.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("SecureStore1.API.Models.Role", b =>
+            modelBuilder.Entity("SecureStore1.API.Data.Entities.Role", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -152,7 +196,7 @@ namespace SecureStore1.API.Migrations
                         });
                 });
 
-            modelBuilder.Entity("SecureStore1.API.Models.User", b =>
+            modelBuilder.Entity("SecureStore1.API.Data.Entities.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -187,43 +231,77 @@ namespace SecureStore1.API.Migrations
 
             modelBuilder.Entity("RoleUser", b =>
                 {
-                    b.HasOne("SecureStore1.API.Models.Role", null)
+                    b.HasOne("SecureStore1.API.Data.Entities.Role", null)
                         .WithMany()
                         .HasForeignKey("RolesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SecureStore1.API.Models.User", null)
+                    b.HasOne("SecureStore1.API.Data.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SecureStore1.API.Models.Order", b =>
+            modelBuilder.Entity("SecureStore1.API.Data.Entities.CartItem", b =>
                 {
-                    b.HasOne("SecureStore1.API.Models.User", null)
+                    b.HasOne("SecureStore1.API.Data.Entities.Cart", "Cart")
+                        .WithMany("CartItems")
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SecureStore1.API.Data.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("SecureStore1.API.Data.Entities.Order", b =>
+                {
+                    b.HasOne("SecureStore1.API.Data.Entities.User", null)
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SecureStore1.API.Models.OrderItem", b =>
+            modelBuilder.Entity("SecureStore1.API.Data.Entities.OrderItem", b =>
                 {
-                    b.HasOne("SecureStore1.API.Models.Order", null)
+                    b.HasOne("SecureStore1.API.Data.Entities.Order", "Order")
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("SecureStore1.API.Data.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("SecureStore1.API.Models.Order", b =>
+            modelBuilder.Entity("SecureStore1.API.Data.Entities.Cart", b =>
+                {
+                    b.Navigation("CartItems");
+                });
+
+            modelBuilder.Entity("SecureStore1.API.Data.Entities.Order", b =>
                 {
                     b.Navigation("OrderItems");
                 });
 
-            modelBuilder.Entity("SecureStore1.API.Models.User", b =>
+            modelBuilder.Entity("SecureStore1.API.Data.Entities.User", b =>
                 {
                     b.Navigation("Orders");
                 });

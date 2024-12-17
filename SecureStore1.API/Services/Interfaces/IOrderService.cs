@@ -1,5 +1,7 @@
-﻿using SecureStore1.API.DTOs;
+﻿using SecureStore1.API.Data.Entities;
+using SecureStore1.API.DTOs;
 using SecureStore1.API.Enums;
+using SecureStore1.API.Models;
 
 namespace SecureStore1.API.Services.Interfaces
 {

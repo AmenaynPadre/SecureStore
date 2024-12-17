@@ -13,9 +13,9 @@ namespace SecureStore1.API.Repositories
         {
             _context = context;
         }
-        public async Task AddAsync(User entity)
+        public async Task AddAsync(User user)
         {
-            await _context.Users.AddAsync(entity);
+            await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
         }
 
@@ -41,7 +41,7 @@ namespace SecureStore1.API.Repositories
 
         public async Task<User> GetByIdAsync(int id)
         {
-            return await _context.Users.FindAsync(id);
+            return await _context.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.Id == id);
         }
 
         public async Task<User> GetUserByUserNameAsync(string userName)
@@ -49,9 +49,9 @@ namespace SecureStore1.API.Repositories
             return await _context.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.UserName == userName);
         }
 
-        public async Task UpdateAsync(User entity)
+        public async Task UpdateAsync(User user)
         {
-            _context.Users.Update(entity);
+            _context.Users.Update(user);
             await _context.SaveChangesAsync();
         }
     }

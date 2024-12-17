@@ -12,6 +12,13 @@ namespace SecureStore1.API.Helpers
             CreateMap<RegisterUserDto, User>();
             CreateMap<UserDto, User>();
             CreateMap<User, UserDto>();
+            CreateMap<Cart, CartDto>();
+            CreateMap<CartDto, Cart>();
+            CreateMap<CartItem, CartItemDto>();
+            CreateMap<CartItemDto, CartItem>();
+            CreateMap<Order, OrderDto>();
+            CreateMap<OrderDto, Order>();
+            CreateMap<OrderItem, OrderItemDto>();
         }
     }
 }

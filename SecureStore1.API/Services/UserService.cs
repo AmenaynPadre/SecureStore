@@ -37,26 +37,44 @@ namespace SecureStore1.API.Services
             _mapper = mapper;
         }
 
-        public async Task DeleteUserAsync(int userId)
-        {
-
-            await _userRepository.DeleteAsync(userId);
-        }
-
-        public async Task<IEnumerable<User>> GetAllUsersAsync()
-        {
-            return await _userRepository.GetAllUsersAsync();
-        }
-
-        public async Task<UserDto> GetUserByIdAsync(int userId)
+        public async Task<ServiceResponse<string>> DeleteUserAsync(int userId)
         {
             var user = await _userRepository.GetByIdAsync(userId);
+            if (user == null)
+            {
+                return ServiceResponse<string>.FailureResponse("User not found.");
+            }
+
+            await _userRepository.DeleteAsync(userId);
+            return ServiceResponse<string>.SuccessResponse(null, "User deleted successfully.");
+        }
+
+        public async Task<ServiceResponse<IEnumerable<UserDto>>> GetAllUsersAsync()
+        {
+            var users = await _userRepository.GetAllUsersAsync();
+
+            if (users == null || !users.Any())
+            {
+                return ServiceResponse<IEnumerable<UserDto>>.FailureResponse("No users found.");
+            }
+
+            var userDtos = users.Select(user => _mapper.Map<UserDto>(user));
+            return ServiceResponse<IEnumerable<UserDto>>.SuccessResponse(userDtos, "Users retrieved successfully.");
+        }
+
+        public async Task<ServiceResponse<UserDto>> GetUserByIdAsync(int userId)
+        {
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user == null)
+            {
+                return ServiceResponse<UserDto>.FailureResponse("User not found.");
+            }
             UserDto dto = _mapper.Map<UserDto>(user);
-            return dto;
+            return ServiceResponse<UserDto>.SuccessResponse(dto, "User retrieved successfully.");
         }
 
         public async Task<ServiceResponse<string>> LoginAsync(LoginUserDto loginDto)
-        {
+        {   
             var user = await _userRepository.GetUserByUserNameAsync(loginDto.UserName);
             if (user == null)
             {
@@ -97,11 +115,6 @@ namespace SecureStore1.API.Services
             return ServiceResponse<string>.SuccessResponse("User registered successfully.");
         }
 
-        public Task UpdateUserAsync(UserDto userDto)
-        {
-            throw new NotImplementedException();
-        }
-
         private async Task<string> GenerateJwtToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -125,7 +138,7 @@ namespace SecureStore1.API.Services
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(claims),
-                    Expires = DateTime.UtcNow.AddDays(int.Parse(_configuration["Jwt:ExpirationInMinutes"])),
+                    Expires = DateTime.UtcNow.AddMinutes(int.Parse(_configuration["Jwt:ExpirationInMinutes"])),
                     Audience = _configuration["Jwt:Audience"],
                     Issuer = _configuration["Jwt:Issuer"],
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -136,6 +149,25 @@ namespace SecureStore1.API.Services
 
             return tokenHandler.WriteToken(token);
 
+        }
+
+        public async Task<ServiceResponse<string>> UpdateUserAsync(UserDto userDto)
+        {
+            var existingUser = await _userRepository.GetByIdAsync(userDto.Id);
+
+            if (existingUser == null)
+            {
+                return ServiceResponse<string>.FailureResponse("User not found.");
+            }
+
+            var updateResult = _userRepository.UpdateAsync(_mapper.Map(userDto, existingUser));
+
+            if (updateResult == null)
+            {
+                return ServiceResponse<string>.FailureResponse("Failed to update user.");
+            }
+
+            return ServiceResponse<string>.SuccessResponse("User updated successfully.");
         }
     }
 }
