@@ -22,36 +22,26 @@ namespace SecureStore1.API.Repositories
             return order;
         }
 
-        public Task DeleteOrderAsync(int orderId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Order>> GetAllOrdersAsync()
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<Order> GetOrderByIdAsync(int orderId)
         {
             return await _context.Orders
-                .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.Product)
+                .Include(o => o.OrderItems) 
                 .FirstOrDefaultAsync(o => o.Id == orderId);
         }
 
         public async Task<IEnumerable<Order>> GetOrdersByUserIdAsync(int userId)
         {
             return await _context.Orders
-                .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.Product)
+                .Include(o => o.OrderItems) 
                 .Where(o => o.UserId == userId)
                 .ToListAsync();
         }
 
-        public Task UpdateOrderStatusAsync(int orderId, OrderStatus status)
+        public async Task<List<Order>> GetAllOrdersAsync()
         {
-            throw new NotImplementedException();
+            return await _context.Orders
+                .Include(o => o.OrderItems) 
+                .ToListAsync();
         }
     }
 }

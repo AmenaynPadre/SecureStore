@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SecureStore1.API.Data.Entities;
+using SecureStore1.API.DTOs;
 using SecureStore1.API.Models;
 using SecureStore1.API.Services.Interfaces;
 
@@ -17,35 +18,56 @@ namespace SecureStore1.API.Controllers
             _orderService = orderService;
         }
 
-        //[HttpPost]
-        //public async Task<ActionResult<ApiResponse<Order>>> CreateOrder([FromBody] Order order)
-        //{
-        //    var serviceResponse = await _orderService.CreateOrderAsync(order);
-        //    if (!serviceResponse.Success)
-        //    {
-        //        return BadRequest(ApiResponse<Order>.FailureResponse(serviceResponse.Message));
-        //    }
+        [HttpPost]
+        public async Task<IActionResult> CreateOrder([FromBody]int userId)
+        {
+            var response = await _orderService.CreateOrderAsync(userId);
 
-        //    return Ok(ApiResponse<Order>.SuccessResponse(serviceResponse.Data, serviceResponse.Message));
-        //}
+            if (response.Success)
+            {
+                return Ok(ApiResponse<OrderDto>.SuccessResponse(response.Data, "Order created successfully."));
+            }
 
-        //[HttpGet("{orderId}")]
-        //public async Task<ActionResult<ApiResponse<Order>>> GetOrderById(int orderId)
-        //{
-        //    var serviceResponse = await _orderService.GetOrderByIdAsync(orderId);
-        //    if (!serviceResponse.Success)
-        //    {
-        //        return NotFound(ApiResponse<Order>.FailureResponse(serviceResponse.Message));
-        //    }
+            return BadRequest(ApiResponse<OrderDto>.FailureResponse(response.Message));
+        }
 
-        //    return Ok(ApiResponse<Order>.SuccessResponse(serviceResponse.Data, serviceResponse.Message));
-        //}
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetOrderById(int id)
+        {
+            var response = await _orderService.GetOrderByIdAsync(id);
 
-        //[HttpGet("user/{userId}")]
-        //public async Task<ActionResult<ApiResponse<IEnumerable<Order>>>> GetOrdersByUserId(int userId)
-        //{
-        //    var serviceResponse = await _orderService.GetOrdersByUserIdAsync(userId);
-        //    return Ok(ApiResponse<IEnumerable<Order>>.SuccessResponse(serviceResponse.Data, serviceResponse.Message));
-        //}
+            if (response.Success)
+            {
+                return Ok(ApiResponse<OrderDto>.SuccessResponse(response.Data));
+            }
+
+            return NotFound(ApiResponse<OrderDto>.FailureResponse(response.Message));
+        }
+
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetOrdersByUserId(int userId)
+        {
+            var response = await _orderService.GetOrdersByUserIdAsync(userId);
+
+            if (response.Success)
+            {
+                return Ok(ApiResponse<IEnumerable<OrderDto>>.SuccessResponse(response.Data));
+            }
+
+            return NotFound(ApiResponse<IEnumerable<OrderDto>>.FailureResponse(response.Message));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllOrders()
+        {
+            var response = await _orderService.GetAllOrdersAsync();
+
+            if (response.Success)
+            {
+                return Ok(ApiResponse<IEnumerable<OrderDto>>.SuccessResponse(response.Data));
+            }
+
+            return NoContent();
+        }
     }
 }

@@ -59,34 +59,19 @@ namespace SecureStore1.API
                 .EnableDetailedErrors());
 
             builder.Services.AddScoped<IUserService, UserService>();
-            builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IRoleRepository, RoleRepository>();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<ICartService, CartService>();
+            builder.Services.AddScoped<ICartRepository, CartRepository>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
+
             builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
             builder.Services.AddFluentValidationAutoValidation();
             builder.Services.AddValidatorsFromAssemblyContaining<Program>();
-
-            //builder.Services.Configure<ApiBehaviorOptions>(options =>
-            //{
-            //    options.InvalidModelStateResponseFactory = context =>
-            //    {
-            //        var errors = context.ModelState
-            //            .Where(x => x.Value.Errors.Any())
-            //            .ToDictionary(
-            //                kvp => kvp.Key,
-            //                kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
-            //            );
-
-            //        return new BadRequestObjectResult(new
-            //        {
-            //            Success = false,
-            //            Message = "Validation failed.",
-            //            Errors = errors
-            //        });
-            //    };
-            //});
 
             builder.Services.AddAuthentication(options =>
             {

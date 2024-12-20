@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using SecureStore1.API.Data.Entities;
 using SecureStore1.API.DTOs;
+using SecureStore1.API.DTOs.ProductDto;
 
 namespace SecureStore1.API.Helpers
 {
@@ -19,6 +20,10 @@ namespace SecureStore1.API.Helpers
             CreateMap<Order, OrderDto>();
             CreateMap<OrderDto, Order>();
             CreateMap<OrderItem, OrderItemDto>();
+            CreateMap<Product, ProductCreateDto>();
+            CreateMap<ProductCreateDto, Product>();
+            CreateMap<ProductDto, Product>();
+            CreateMap<Product, ProductDto>();
         }
     }
 }

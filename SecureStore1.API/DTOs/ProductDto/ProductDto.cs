@@ -1,6 +1,6 @@
-﻿namespace SecureStore1.API.Data.Entities
+﻿namespace SecureStore1.API.DTOs.ProductDto
 {
-    public class Product
+    public class ProductDto
     {
         public int Id { get; set; }
         public string Name { get; set; }

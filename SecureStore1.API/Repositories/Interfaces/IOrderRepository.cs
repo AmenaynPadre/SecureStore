@@ -8,8 +8,6 @@ namespace SecureStore1.API.Repositories.Interfaces
         Task<Order> CreateOrderAsync(Order order);
         Task<Order> GetOrderByIdAsync(int orderId);
         Task<IEnumerable<Order>> GetOrdersByUserIdAsync(int userId);
-        Task UpdateOrderStatusAsync(int orderId, OrderStatus status);
-        Task<IEnumerable<Order>> GetAllOrdersAsync();
-        Task DeleteOrderAsync(int orderId);
+        Task<List<Order>> GetAllOrdersAsync();
     }
 }

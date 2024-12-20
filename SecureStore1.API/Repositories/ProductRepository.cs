@@ -19,9 +19,14 @@ namespace SecureStore1.API.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public Task DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            var product = await _context.Products.FindAsync(id);
+            if (product != null)
+            {
+                _context.Products.Remove(product);
+                await _context.SaveChangesAsync();
+            }
         }
 
         public async Task<IEnumerable<Product>> GetAllAsync()
@@ -34,9 +39,10 @@ namespace SecureStore1.API.Repositories
             return await _context.Products.FindAsync(id);
         }
 
-        public Task UpdateAsync(Product entity)
+        public async Task UpdateAsync(Product entity)
         {
-            throw new NotImplementedException();
+            _context.Products.Update(entity);
+            await _context.SaveChangesAsync();
         }
     }
 }

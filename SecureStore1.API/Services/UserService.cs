@@ -107,8 +107,9 @@ namespace SecureStore1.API.Services
 
             var user = _mapper.Map<User>(registerUserDto);
 
-            user.PasswordHash = _passwordHasher.HashPassword(user, registerUserDto.Password);
+            user.Roles = new List<Role> { role };
 
+            user.PasswordHash = _passwordHasher.HashPassword(user, registerUserDto.Password);
 
             await _userRepository.AddAsync(user);
 
